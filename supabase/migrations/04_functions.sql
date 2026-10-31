@@ -64,8 +64,8 @@ begin
         where l.subscription_id = sub.id and (d.product_id is null or l.product_id = d.product_id)
       ) b
       where d.active and b.amt > 0 and b.amt >= d.min_amount and b.qty >= d.min_qty
-        and (d.start_date is null or d.start_date <= v_next)
-        and (d.end_date is null or d.end_date >= v_next)
+        and (d.start_date is null or d.start_date <= p_today)
+        and (d.end_date is null or d.end_date >= p_today)
         and (d.usage_limit is null or d.used_count < d.usage_limit)
       order by damt desc
       limit 1;
