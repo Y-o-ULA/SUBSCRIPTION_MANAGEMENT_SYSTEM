@@ -1,0 +1,72 @@
+================================================================================
+BRIGHTLOOP SUBSCRIPTION PLATFORM - TECHNICAL CHEAT-SHEET
+================================================================================
+
+PROJECT: BrightLoop Subscription Platform
+STACK:   React 19, Vite 8, Tailwind CSS, Recharts, Lucide, Supabase (PostgreSQL 15)
+
+1. DEFAULT CREDENTIALS (TEST ENVIRONMENT)
+--------------------------------------------------------------------------------
+Admin Console:     admin@example.com    / password123  -> /dashboard
+Customer Portal:   customer1@example.com / password123  -> /portal
+
+2. CORE APPLICATION URLS
+--------------------------------------------------------------------------------
+/login             -> Main landing & authentication page (Jenny Scott theme)
+/dashboard         -> Executive KPI metrics & monthly revenue area chart
+/products          -> Catalog of items, add-ons, and variant attributes
+/plans             -> Multi-interval pricing tiers (monthly, yearly, weekly)
+/subscriptions     -> Subscription lifecycle registry with search & filters
+/invoices          -> Tax invoices, outstanding balance, and due dates
+/payments          -> Multi-channel collections (UPI, Cards, Bank Transfer)
+/discounts         -> Percentage & flat promo campaigns with redemption limits
+/billing-run       -> 1-click execution of the automated invoicing engine
+/portal            -> Client self-service portal (subscriptions & receipts)
+/portal/invoice/:id-> Clean printable tax invoice receipt
+
+3. POSTGRESQL DATABASE OBJECTS (SUPABASE)
+--------------------------------------------------------------------------------
+TABLES:
+  - customers            : Client accounts (name, email, company)
+  - profiles             : Maps auth.users to roles ('admin' | 'customer')
+  - products             : Base catalog software items & services
+  - product_variants     : Variant options & extra pricing
+  - taxes                : GST and sales tax rates
+  - plans                : Pricing tiers linked to products & cadences
+  - discounts            : Promotion rules, minimum criteria & usage caps
+  - subscriptions        : Customer contracts & next_billing_dates
+  - subscription_lines   : Items & quantities per subscription
+  - invoices             : Generated billing period tax documents
+  - invoice_lines        : Breakdown lines with applied tax rates
+  - payments             : Recorded settlements against invoices
+
+DATABASE VIEWS:
+  - dashboard_summary    : Aggregated MRR, active subs, overdue counts
+  - monthly_revenue      : Historical monthly revenue for chart visualization
+  - invoice_balances     : Invoices joined with payments & days overdue
+  - overdue_invoices     : Invoices where due_date < current_date
+  - upcoming_renewals    : Subscriptions renewing within the next 7 days
+  - billing_queue        : Subscriptions due for invoicing today or earlier
+
+DATABASE TRIGGERS:
+  - trg_set_next_billing : Auto-assigns next_billing_date on activation
+  - trg_check_payment    : Prevents settlements exceeding invoice balance
+  - trg_mark_paid        : Flips invoice status to 'Paid' upon full balance
+
+STORED PROCEDURES:
+  - generate_due_invoices() : Batch engine that processes billing_queue,
+                              calculates discounts & taxes, creates invoices,
+                              and updates subscription renewal dates.
+
+4. ENVIRONMENT CONFIGURATION (.env)
+--------------------------------------------------------------------------------
+VITE_SUPABASE_URL=https://<your-project-ref>.supabase.co
+VITE_SUPABASE_ANON_KEY=<your-anon-publishable-key>
+
+5. LOCAL DEVELOPMENT COMMANDS
+--------------------------------------------------------------------------------
+npm install              # Install dependencies
+npm run dev              # Run local dev server (default port 5173)
+npm run build            # Verify production build compilation
+================================================================================
+
